@@ -24,12 +24,16 @@ import cn.mamhao.mamahaodemo.SharedPreference;
 
 public class WorkJob extends Job {
     public static final String TAG = "work_job_tag";
+
     @NonNull
     @Override
     protected Result onRunJob(@NonNull Params params) {
-        handleWork();
+        if (MmhWorkJobStrategy.isMMhWorkJobConfig(getContext())) {
+            handleWork();
+        }
         return Result.SUCCESS;
     }
+
     /**
      * 执行任务
      */
@@ -41,10 +45,10 @@ public class WorkJob extends Job {
                     //1、第一次到2点-5点之间
                     //2、累计加标识位 1
                     SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 1);
-                    System.out.println("handleWord  1==========================>"+SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
+                    System.out.println("handleWord  1==========================>" + SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
                     break;
                 case 1:
-                    System.out.println("handleWord  2==========================>"+SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
+                    System.out.println("handleWord  2==========================>" + SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
                     //1、第二次次到2点-5点之间
                     //2、累计加标识位 1
                     SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 2);
@@ -52,7 +56,7 @@ public class WorkJob extends Job {
                     SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 0);
                     //4、//程序进行杀死  清除所有的activity和进程杀死
                     Process.killProcess(Process.myPid());
-                    System.out.println("handleWord  2==========================>"+SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
+                    System.out.println("handleWord  2==========================>" + SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
                     break;
                 default:
                     //如果是其他了就 清零
@@ -61,17 +65,22 @@ public class WorkJob extends Job {
             }
             //判断当前设备是否在后台
         } else {
-            System.out.println(SharedPreference.getInt(getContext(), "isAppBgConfigNums")+"  ===WorkJob----------------------------------------" + new SimpleDateFormat("yyyy年MM月dd日HH时mm分ss秒").format(new Date(System.currentTimeMillis())));
+            System.out.println(SharedPreference.getInt(getContext(), "isAppBgConfigNums") + "  ===WorkJob----------------------------------------" + new SimpleDateFormat("yyyy年MM月dd日HH时mm分ss秒").format(new Date(System.currentTimeMillis())));
             SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 0);
         }
     }
+
     public static void schedulePeriodic() {
-        //取消之前的全部
-        JobManager.instance().cancelAll();
-        new JobRequest.Builder(WorkJob.TAG)
-                .setPeriodic(TimeUnit.MINUTES.toMillis(15), TimeUnit.MINUTES.toMillis(5))//设置方案
-                .setUpdateCurrent(true)
-                .build()
-                .schedule();
+        try {
+            //取消之前的全部
+            JobManager.instance().cancelAll();
+            new JobRequest.Builder(WorkJob.TAG)
+                    .setPeriodic(TimeUnit.MINUTES.toMillis(15), TimeUnit.MINUTES.toMillis(5))//设置方案
+                    .setUpdateCurrent(true)
+                    .build()
+                    .schedule();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

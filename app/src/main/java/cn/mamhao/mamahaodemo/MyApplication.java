@@ -2,10 +2,7 @@ package cn.mamhao.mamahaodemo;
 
 import android.app.Application;
 
-import com.evernote.android.job.JobManager;
-
 import cn.mamhao.mamahaodemo.workManager.AppSwitchMoitor;
-import cn.mamhao.mamahaodemo.workManager.WorkJobCreatorFactory;
 
 /**
  * @author guoqj
@@ -24,10 +21,15 @@ public class MyApplication extends Application {
         super.onCreate();
         try {
             registerActivityLifecycleCallbacks(new AppSwitchMoitor());
-            JobManager.create(this).addJobCreator(new WorkJobCreatorFactory());
+//            JobManager.create(this).addJobCreator(new WorkJobCreatorFactory());
         }catch (Exception e){
         }
         //JobManager.instance().getConfig().setAllowSmallerIntervalsForMarshmallow(true); // Don't use this in production
        // JobManager.create(this).set
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
     }
 }

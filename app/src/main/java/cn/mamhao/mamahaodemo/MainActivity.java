@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.view.View;
@@ -15,10 +16,17 @@ import java.util.concurrent.TimeUnit;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import cn.mamhao.mamahaodemo.workManager.WorkJob;
+import cn.mamhao.mamahaodemo.utils.ILastTimesMonitor;
+import cn.mamhao.mamahaodemo.utils.RxjavaLastTimeManage;
+import cn.mamhao.mamahaodemo.workManager.MmhWorkJobStrategy;
 
 public class MainActivity extends AppCompatActivity {
     String workName = "mmh";
+    Handler handler = new Handler();
+    RxjavaLastTimeManage timeManage;
+    boolean isError;
+    Long remainTimes;
+    Long firstTimes = 0l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +46,69 @@ public class MainActivity extends AppCompatActivity {
 //        testttt();
 //        System.out.println(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 //        WorkerManageUtils.startWork();
-        WorkJob.schedulePeriodic();
+//        WorkJob.schedulePeriodic();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MmhWorkJobStrategy.initMMhWorkJob(MainActivity.this);
+                MmhWorkJobStrategy.startWork(MainActivity.this);
+                System.out.println("----------------------------");
+            }
+        }, 5000);
+        timeManage = new RxjavaLastTimeManage();
+        timeManage.lastTimeConfig(this, 20, new ILastTimesMonitor() {
+            @Override
+            public void initConfig(long times) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("onCompletedonCompleted=======================");
+            }
+
+            @Override
+            public void onError() {
+                System.out.println("onErroronErroronError=======================");
+            }
+
+            @Override
+            public void onNext(long time) {
+                System.out.println(formatDateTimePayWay(time));
+            }
+        });
+        timeManage.start();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        timeManage.onPauseTime();
+    }
+
+    public static String formatDateTimePayWay(long mss) {
+        StringBuffer dateStrs = new StringBuffer();
+        long days = mss / (60 * 60 * 24);
+        long hours = (mss % (60 * 60 * 24)) / (60 * 60);
+        long minutes = (mss % (60 * 60)) / 60;
+        long seconds = mss % 60;
+        if (days > 0) {
+            dateStrs.append(days).append("天").append(hours).append("时").append(minutes).append("分").append(seconds).append("秒");
+        } else if (hours > 0) {
+            dateStrs.append(hours).append("小时").append(minutes).append("分").append(seconds).append("秒");
+
+        } else if (minutes > 0) {
+            dateStrs.append(minutes).append("分").append(seconds).append("秒");
+        } else {
+            dateStrs.append("00分").append(seconds).append("秒");
+        }
+        return dateStrs.append("后订单失效").toString();
     }
 
     int REQUEST_CODE = 20;

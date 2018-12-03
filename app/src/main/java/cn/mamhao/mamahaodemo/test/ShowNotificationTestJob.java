@@ -4,7 +4,6 @@ import android.os.Process;
 import android.support.annotation.NonNull;
 
 import com.evernote.android.job.Job;
-import com.evernote.android.job.JobRequest;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -38,6 +37,7 @@ public class ShowNotificationTestJob extends Job {
 //        System.out.println("ShowNotificationTestJob----------------------------------------" + new SimpleDateFormat("yyyy年MM月dd日HH时mm分ss秒").format(new Date(System.currentTimeMillis())));
         return Result.SUCCESS;
     }
+
     /**
      * 执行任务
      */
@@ -56,9 +56,15 @@ public class ShowNotificationTestJob extends Job {
                     //1、第二次次到2点-5点之间
                     //2、累计加标识位 1
                     SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 2);
+                    break;
+                case 2:
+                    System.out.println("handleWord  3==========================>" + SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
+                    //1、第二次次到2点-5点之间
+                    //2、累计加标识位 1
+                    SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 3);
                     //3、累计加标识位 回复到0
                     SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 0);
-                    System.out.println("handleWord  2==========================>" + SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
+                    System.out.println("handleWord  3==========================>" + SharedPreference.getInt(getContext(), "isAppBgConfigNums"));
                     //4、//程序进行杀死  清除所有的activity和进程杀死
                     ActivityListUtil.getInstence().cleanActivityList();
                     Process.killProcess(Process.myPid());
@@ -74,11 +80,13 @@ public class ShowNotificationTestJob extends Job {
             SharedPreference.saveToSP(getContext(), "isAppBgConfigNums", 0);
         }
     }
+
     public static void schedulePeriodic() {
-        new JobRequest.Builder(ShowNotificationTestJob.TAG)
-                .startNow()
-                .build()
-                .schedule();
+//        JobManager.instance().cancelAll();
+//        new JobRequest.Builder(ShowNotificationTestJob.TAG)
+//                .startNow()
+//                .build()
+//                .schedule();
 //        int jobId = new JobRequest.Builder(ShowNotificationTestJob.TAG)
 //                .setExecutionWindow(30_000L, 40_000L)
 //                .setBackoffCriteria(5_000L, JobRequest.BackoffPolicy.EXPONENTIAL)

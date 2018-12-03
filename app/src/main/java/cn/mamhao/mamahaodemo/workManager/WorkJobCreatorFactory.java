@@ -3,8 +3,6 @@ package cn.mamhao.mamahaodemo.workManager;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobCreator;
 
-import cn.mamhao.mamahaodemo.test.ShowNotificationTestJob;
-
 /**
  * @author guoqj
  * @version 2.5.4
@@ -21,9 +19,6 @@ public class WorkJobCreatorFactory implements JobCreator {
         switch (tag) {
             case WorkJob.TAG:
                 return new WorkJob();
-            case ShowNotificationTestJob
-                    .TAG:
-                return new ShowNotificationTestJob();
             default:
                 return null;
         }

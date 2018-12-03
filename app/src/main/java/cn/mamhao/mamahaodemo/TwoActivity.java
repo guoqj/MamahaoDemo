@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import cn.mamhao.mamahaodemo.test.ShowNotificationTestJob;
-
 public class TwoActivity extends AppCompatActivity {
 
     @Override
@@ -17,7 +15,7 @@ public class TwoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                WorkerManageUtils.oneWork();
-                ShowNotificationTestJob.schedulePeriodic();
+//                MmhWorkJobStrategy.startWorkTest();
 //                startActivity(new Intent(TwoActivity.this, TwoActivity.class));
             }
         });
